@@ -16,11 +16,13 @@ class Country(
                     strategy = GenerationType.SEQUENCE,
                     generator = "country_sequence",
                 )
-                val id: Long = 0,
+                val id: Long? = null,
                 val name: String,
                 var numShips: Int,
                 var numIncidents:Int = 0,
-                var incidents) {
+                @get:ManyToMany(fetch = FetchType.EAGER)
+                @get:JoinColumn(name = "country_id")
+                var incidents: MutableSet<Incident> = mutableSetOf()) {
 
 
     // toString, Getters, Setters

@@ -16,7 +16,7 @@ class Ship(
                 strategy = GenerationType.SEQUENCE,
                 generator = "ship_sequence"
             )
-            val id: Long = 0,
+            val id: Long? = null,
 
             @Column
             var name: String,
@@ -27,11 +27,11 @@ class Ship(
             @Column
             var y_coords: Double,
 
-            @ManyToMany()
+            @ManyToOne()
             val countryOfOrigin: Country){
 
     override fun toString(): String {
-        return ""
+        return "$name @ x: $x_coords y: $y_coords from ${countryOfOrigin.name}"
     }
 
 }
