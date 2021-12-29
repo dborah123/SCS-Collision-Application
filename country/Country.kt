@@ -18,9 +18,11 @@ class Country(
                     generator = "country_sequence",
                 )
                 val id: Long? = null,
+
                 val name: String,
-                var numShips: Int,
+                var numShips: Int = 0,
                 var numIncidents:Int = 0,
+
                 @ManyToMany
                 @JoinTable(
                     name = "incidents_countriesInvolved",
@@ -28,9 +30,14 @@ class Country(
                     inverseJoinColumns = [JoinColumn(name = "incident_id")]
                 )
                 var incidents: MutableSet<Incident> = mutableSetOf(),
-                @OneToMany(cascade = [CascadeType.ALL], mappedBy = "countryOfOrigin")
-                var ships: MutableSet<Ship>) {
 
+                @OneToMany(cascade = [CascadeType.ALL], mappedBy = "countryOfOrigin")
+                var ships: MutableSet<Ship> = mutableSetOf()) {
+
+
+    fun addShip(ship: Ship) {
+        ships.add(ship)
+    }
 
     // toString, Getters, Setters
     override fun toString(): String {

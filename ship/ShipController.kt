@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(path="ships")
+@RequestMapping(path= ["ships"])
 class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
 
     @GetMapping("/search/")
