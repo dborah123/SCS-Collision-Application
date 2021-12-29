@@ -20,16 +20,10 @@ class Ship(
             var name: String,
             var x_coords: Double,
             var y_coords: Double,
-
-            @OneToOne(fetch = FetchType.EAGER)
-            val countryOfOrigin: Country){
-
-    init {
-        countryOfOrigin.addShip(this)
-    }
+            val countryOfOrigin: String){
 
     override fun toString(): String {
-        return "$name @ x: $x_coords y: $y_coords from ${countryOfOrigin.name}"
+        return "$name @ x: $x_coords y: $y_coords from $countryOfOrigin"
     }
 
 }

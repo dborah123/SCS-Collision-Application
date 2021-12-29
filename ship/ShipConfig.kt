@@ -18,9 +18,9 @@ class ShipConfig {
                 name = "USS Arizona",
                 x_coords = 153122.0,
                 y_coords = 1143003.6,
-                countryOfOrigin = usa
+                countryOfOrigin = "United States of America"
             )
-
+            usa.addShip(shipA)
             countryrepo.saveAll(listOf(usa))
             shiprepo.saveAll(listOf(shipA))
 

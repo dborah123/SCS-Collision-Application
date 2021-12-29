@@ -29,6 +29,8 @@ class Incident(
                 ) {
 
     override fun toString(): String {
-        return "Time: ${time}\tIncident between: ${shipA.name} of ${shipA.countryOfOrigin.name} and ${shipB.name} of ${shipB.countryOfOrigin.name}"
+        return "Time: ${time}\tIncident between: " +
+                "${shipA.name} of ${shipA.countryOfOrigin} " +
+                "and ${shipB.name} of ${shipB.countryOfOrigin}"
     }
 }

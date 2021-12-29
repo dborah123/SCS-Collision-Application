@@ -11,14 +11,35 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path= ["ships"])
 class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
 
-    @GetMapping("/search/")
-    fun getShips(
-                    @RequestParam(required = false) id: Long?,
-                    @RequestParam(required = false) name: String,
-                    @RequestParam(required = false) x_coords: Double,
-                    @RequestParam(required = false) y_coords: Double,
-                    @RequestParam(required = false) countryOfOrigin: String,
-    ): List<Ship> {
+    @GetMapping
+    fun getShips(): List<Ship> {
+        /*
+         * Gets all ships in database
+         */
         return SHIP_SERVICE.getShips()
+    }
+
+    @GetMapping("/search/")
+    fun getSpecificShips(
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) countryOfOrigin: String?,
+    ): List<Ship> {
+        /*
+         * Searches ships with optional parameters: id, name, country of origin
+         */
+        return SHIP_SERVICE.getSpecificShips(id, name, countryOfOrigin)
+    }
+
+    @GetMapping("/search/radius")
+    fun getShipsInRadius(
+        @RequestParam() x_coord: Double,
+        @RequestParam() y_coord: Double,
+        @RequestParam() radius: Double,
+    ): MutableList<Ship> {
+        /*
+         * Gets ships within a specific radius of a specified point
+         */
+        return SHIP_SERVICE.getShipsInRadius(x_coord, y_coord, radius)
     }
 }
