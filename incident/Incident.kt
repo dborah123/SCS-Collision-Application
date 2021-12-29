@@ -1,9 +1,12 @@
 package com.example.scscollision.incident
 
+import com.example.scscollision.country.Country
 import com.example.scscollision.ship.Ship
 import java.time.LocalDateTime
 import javax.persistence.*
 
+@Entity
+@Table(name = "incident")
 class Incident(
                 @Id
                 @SequenceGenerator(
@@ -20,7 +23,9 @@ class Incident(
                 val shipA: Ship,
                 @OneToOne
                 val shipB: Ship,
-                val time: LocalDateTime
+                val time: LocalDateTime,
+                @ManyToMany(mappedBy = "incidents")
+                val countriesInvolved: Set<Country>
                 ) {
 
     override fun toString(): String {

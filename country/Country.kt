@@ -1,6 +1,7 @@
 package com.example.scscollision.country
 
 import com.example.scscollision.incident.Incident
+import com.example.scscollision.ship.Ship
 import javax.persistence.*
 
 @Entity
@@ -20,9 +21,15 @@ class Country(
                 val name: String,
                 var numShips: Int,
                 var numIncidents:Int = 0,
-                @get:ManyToMany(fetch = FetchType.EAGER)
-                @get:JoinColumn(name = "country_id")
-                var incidents: MutableSet<Incident> = mutableSetOf()) {
+                @ManyToMany
+                @JoinTable(
+                    name = "incidents_countriesInvolved",
+                    joinColumns = [JoinColumn(name = "country_id")],
+                    inverseJoinColumns = [JoinColumn(name = "incident_id")]
+                )
+                var incidents: MutableSet<Incident> = mutableSetOf(),
+                @OneToMany(cascade = [CascadeType.ALL], mappedBy = "countryOfOrigin")
+                var ships: MutableSet<Ship>) {
 
 
     // toString, Getters, Setters

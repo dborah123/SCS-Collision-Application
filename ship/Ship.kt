@@ -17,17 +17,11 @@ class Ship(
                 generator = "ship_sequence"
             )
             val id: Long? = null,
-
-            @Column
             var name: String,
-
-            @Column
             var x_coords: Double,
-
-            @Column
             var y_coords: Double,
 
-            @ManyToOne()
+            @OneToOne()
             val countryOfOrigin: Country){
 
     override fun toString(): String {
