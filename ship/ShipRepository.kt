@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 interface ShipRepository: JpaRepository<Ship, Long>{
@@ -18,4 +19,9 @@ interface ShipRepository: JpaRepository<Ship, Long>{
         @Param("name") name: String?,
         @Param("countryOfOrigin") countryOfOrigin: String?,
     ): List<Ship>
+
+    @Query("SELECT s FROM Ship s WHERE s.name = :name")
+    fun getShipByName(
+        @Param("name") name: String
+    ): Ship?
 }

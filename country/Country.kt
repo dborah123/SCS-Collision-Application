@@ -31,12 +31,13 @@ class Country(
                 )
                 var incidents: MutableSet<Incident> = mutableSetOf(),
 
-                @OneToMany(cascade = [CascadeType.ALL], mappedBy = "countryOfOrigin")
+                @OneToMany(cascade = [CascadeType.ALL], mappedBy = "countryOfOrigin", fetch = FetchType.EAGER)
                 var ships: MutableSet<Ship> = mutableSetOf()) {
 
 
     fun addShip(ship: Ship) {
         ships.add(ship)
+        numShips++
     }
 
     // toString, Getters, Setters

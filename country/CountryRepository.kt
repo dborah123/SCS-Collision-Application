@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 interface CountryRepository: JpaRepository<Country, Long> {
@@ -16,4 +17,10 @@ interface CountryRepository: JpaRepository<Country, Long> {
         @Param("id") id: Long?,
         @Param("name") name: String?
     ): List<Country>
+
+    @Query("SELECT c FROM Country c WHERE c.name = :name")
+    fun getCountryByName(
+        @Param("name") name: String
+    ): Country?
+
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["countries"])
 class CountryController(@Autowired val COUNTRY_SERVICE: CountryService) {
 
-    @GetMapping
+    @GetMapping("/")
     fun getCountries(): List<Country> {
         return COUNTRY_SERVICE.getCountries()
     }

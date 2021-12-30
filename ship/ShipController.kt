@@ -2,14 +2,13 @@ package com.example.scscollision.ship
 
 import com.example.scscollision.country.Country
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path= ["ships"])
 class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
+
+    // GET MAPPINGS:
 
     @GetMapping
     fun getShips(): List<Ship> {
@@ -43,11 +42,20 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
         return SHIP_SERVICE.getShipsInRadius(x_coord, y_coord, radius)
     }
 
-    @GetMapping("search/near/")
+    @GetMapping("/search/near/")
     fun getDistBetween(
         @RequestParam() shipAId: Long,
         @RequestParam() shipBId: Long
     ): Double {
         return SHIP_SERVICE.getDistBetween(shipAId, shipBId)
+    }
+
+    // POST MAPPINGS
+
+    @PostMapping("/add/")
+    fun addShip(
+        @RequestBody() ship: Ship
+    ) {
+        SHIP_SERVICE.addShip(ship)
     }
 }
