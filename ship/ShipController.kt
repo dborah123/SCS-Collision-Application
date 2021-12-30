@@ -31,7 +31,7 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
         return SHIP_SERVICE.getSpecificShips(id, name, countryOfOrigin)
     }
 
-    @GetMapping("/search/radius")
+    @GetMapping("/search/radius/")
     fun getShipsInRadius(
         @RequestParam() x_coord: Double,
         @RequestParam() y_coord: Double,
@@ -41,5 +41,13 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
          * Gets ships within a specific radius of a specified point
          */
         return SHIP_SERVICE.getShipsInRadius(x_coord, y_coord, radius)
+    }
+
+    @GetMapping("search/near/")
+    fun getDistBetween(
+        @RequestParam() shipAId: Long,
+        @RequestParam() shipBId: Long
+    ): Double {
+        return SHIP_SERVICE.getDistBetween(shipAId, shipBId)
     }
 }
