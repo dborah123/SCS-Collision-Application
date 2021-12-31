@@ -24,4 +24,9 @@ interface ShipRepository: JpaRepository<Ship, Long>{
     fun getShipByName(
         @Param("name") name: String
     ): Ship?
+
+    @Query("SELECT s FROM Ship s WHERE s.name = :name")
+    fun getShipByNameOptional(
+        @Param("name") name: String
+    ): Optional<Ship>
 }

@@ -31,7 +31,7 @@ class Country(
                 )
                 var incidents: MutableSet<Incident> = mutableSetOf(),
 
-                @OneToMany(cascade = [CascadeType.ALL], mappedBy = "countryOfOrigin", fetch = FetchType.EAGER)
+                @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
                 var ships: MutableSet<Ship> = mutableSetOf()) {
 
 

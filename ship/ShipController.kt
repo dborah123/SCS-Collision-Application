@@ -50,6 +50,14 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
         return SHIP_SERVICE.getDistBetween(shipAId, shipBId)
     }
 
+    @GetMapping("/search/nearest/")
+    fun getNearestShip(
+        @RequestParam(required = false) shipId: Long?,
+        @RequestParam(required = false) name: String?
+    ): Ship {
+        return SHIP_SERVICE.getNearestShip(shipId, name)
+    }
+
     // POST MAPPINGS
 
     @PostMapping("/add/")
