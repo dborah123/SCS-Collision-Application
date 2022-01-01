@@ -29,4 +29,14 @@ interface ShipRepository: JpaRepository<Ship, Long>{
     fun getShipByNameOptional(
         @Param("name") name: String
     ): Optional<Ship>
+
+    @Query("SELECT s FROM Ship s WHERE "
+    + "(:id is null AND s.name = :name) "
+    + "OR (:name is null AND s.id = :id) "
+    + "OR (s.name = :name AND s.id = :id)"
+    )
+    fun getShipsByIdOrName(
+        @Param("id") id: Long?,
+        @Param("name") name: String?
+    ): List<Ship>
 }

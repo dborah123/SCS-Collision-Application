@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(path= ["ships"])
 class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
 
-    // GET MAPPINGS:
+    /**
+     * GET MAPPINGS:
+     */
 
     @GetMapping
     fun getShips(): List<Ship> {
@@ -54,11 +56,13 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
     fun getNearestShip(
         @RequestParam(required = false) shipId: Long?,
         @RequestParam(required = false) name: String?
-    ): Ship {
+    ): Ship? {
         return SHIP_SERVICE.getNearestShip(shipId, name)
     }
 
-    // POST MAPPINGS
+    /**
+     * POST MAPPINGS
+     */
 
     @PostMapping("/add/")
     fun addShip(
@@ -66,4 +70,19 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
     ) {
         SHIP_SERVICE.addShip(ship)
     }
+
+    /**
+     * PUT MAPPINGS
+     */
+
+    @PutMapping("/update/")
+    fun updateShip(
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) newName: String?,
+        @RequestParam(required = false) newCountryOfOrigin: String?
+    ) {
+        return SHIP_SERVICE.updateShip(id, name, newName, newCountryOfOrigin)
+    }
+
 }

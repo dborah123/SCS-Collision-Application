@@ -40,6 +40,11 @@ class Country(
         numShips++
     }
 
+    fun removeShip(ship: Ship) {
+        ships.remove(ship)
+        numShips--
+    }
+
     // toString, Getters, Setters
     override fun toString(): String {
         return "Country: $name\t# of Ships: $numShips\t# of incidents: $numIncidents"
