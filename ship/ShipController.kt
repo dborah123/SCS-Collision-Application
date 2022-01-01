@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(path= ["ships"])
 class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
 
-    /**
-     * GET MAPPINGS:
-     */
+    /****************
+     * GET MAPPINGS *
+     ****************/
 
     @GetMapping
     fun getShips(): List<Ship> {
@@ -60,9 +60,9 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
         return SHIP_SERVICE.getNearestShip(shipId, name)
     }
 
-    /**
-     * POST MAPPINGS
-     */
+    /*****************
+     * POST MAPPINGS *
+     *****************/
 
     @PostMapping("/add/")
     fun addShip(
@@ -71,9 +71,9 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
         SHIP_SERVICE.addShip(ship)
     }
 
-    /**
-     * PUT MAPPINGS
-     */
+    /****************
+     * PUT MAPPINGS *
+     ****************/
 
     @PutMapping("/update/")
     fun updateShip(
@@ -85,4 +85,25 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
         return SHIP_SERVICE.updateShip(id, name, newName, newCountryOfOrigin)
     }
 
+    @PutMapping("/update/coordinates/")
+    fun updateCoords(
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam() xCoord: Double,
+        @RequestParam() yCoord: Double
+    ) {
+        return SHIP_SERVICE.updateCoords(id, name, xCoord, yCoord)
+    }
+
+    /*******************
+     * DELETE MAPPINGS *
+     *******************/
+
+    @DeleteMapping("/delete/")
+    fun deleteShip(
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) name: String?
+    ) {
+        return SHIP_SERVICE.deleteShip(id, name)
+    }
 }

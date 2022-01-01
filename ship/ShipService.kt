@@ -4,13 +4,9 @@ import com.example.scscollision.country.Country
 import com.example.scscollision.country.CountryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import kotlin.math.pow
-import kotlin.math.sqrt
 import mu.KotlinLogging
-import org.springframework.web.bind.annotation.PostMapping
 import java.util.*
 import javax.transaction.Transactional
-import kotlin.math.log
 
 @Service
 class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: CountryRepository) {
@@ -163,7 +159,6 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
      * PUT FUNCTIONS *
      *****************/
 
-    @Transactional
     fun updateShip(id: Long?,
                    name: String?,
                    newName: String?,
@@ -173,40 +168,99 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         val shipList = SHIP_REPO.getShipsByIdOrName(id, name)
 
         // Checking if error occurred
-        if (shipList.size > 1) {
-            logger.error { "Name not specific enough" }
-            throw Exception("Name not specific enough")
-        } else if (shipList.isEmpty()) {
-            logger.error { "No ship with name: $name and id: $id" }
-            throw Exception("No ship with name: $name and id: $id")
+        if (shipList.isEmpty()) {
+            throw Exception("No ship with name: $name and/or id: $id")
         }
+
+        logger.info { "Ship found" }
 
         val ship = shipList[0]
 
         // Setting new name
         if (newName != null) {
+            logger.info { "Setting new name" }
+
             if (SHIP_REPO.getShipByName(newName) != null) {
-                logger.error { "Another ship already has this name" }
                 throw Exception("Another ship already has this name")
             } else {
+                logger.info { "new name: $newName added to ship" }
                 ship.name = newName
             }
         }
 
         // Setting new country of origin
         if (newCountryOfOrigin != null) {
+            logger.info { "Setting new country of origin" }
+
             val newCountry = COUNTRY_REPO.getCountryByName(newCountryOfOrigin)
             if (newCountry == null) {
-                logger.error { "Another ship already has this name" }
-                throw Exception("Another ship already has this name")
+                throw Exception("No Country with this name")
             } else {
+
                 // Remove ship from previous country of origin
                 val oldCountry = COUNTRY_REPO.getCountryByName(ship.countryOfOrigin)
                 oldCountry?.removeShip(ship)
+                if (oldCountry != null) {
+                    COUNTRY_REPO.save(oldCountry)
+                }
+                logger.info { "Removed ship from ${oldCountry?.name}...list looks like ${oldCountry?.ships}" }
+
+                // Adding new country of origin string to ship
+                ship.countryOfOrigin = newCountryOfOrigin
+                SHIP_REPO.save(ship)
+                logger.info { "Switching ship's country of origin" }
 
                 // Add ship to new country of origin
                 newCountry.addShip(ship)
+                COUNTRY_REPO.save(newCountry)
+                logger.info { "Added ship to ${newCountry.name}" }
             }
         }
+    }
+
+    @Transactional
+    fun updateCoords(id: Long?,
+                     name: String?,
+                     xCoord: Double,
+                     yCoord: Double) {
+        val shipList = SHIP_REPO.getShipsByIdOrName(id, name)
+
+        if (shipList.isEmpty()) {
+            throw Exception("No ship with name: $name and/or id: $id")
+        }
+
+        val ship = shipList[0]
+
+        ship.xCoord = xCoord
+        ship.yCoord = yCoord
+    }
+
+
+    /********************
+     * DELETE FUNCTIONS *
+     ********************/
+
+    fun deleteShip(
+        id: Long?,
+        name: String?
+    ) {
+        val shipList = SHIP_REPO.getShipsByIdOrName(id, name)
+
+        if (shipList.isEmpty()) {
+            throw Exception("No ship with name: $name and/or id: $id")
+        }
+
+        val ship = shipList[0]
+
+        val country = COUNTRY_REPO.getCountryByName(ship.countryOfOrigin)
+
+        if (country != null) {
+            country.removeShip(ship)
+            COUNTRY_REPO.save(country)
+        } else {
+            throw Exception("Country not found...fatal error in database")
+        }
+
+        SHIP_REPO.delete(ship)
     }
 }

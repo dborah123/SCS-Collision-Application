@@ -1,10 +1,13 @@
 package com.example.scscollision.ship
 
+import com.example.scscollision.country.Country
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.util.*
+import javax.transaction.Transactional
 
 @Repository
 interface ShipRepository: JpaRepository<Ship, Long>{
@@ -39,4 +42,12 @@ interface ShipRepository: JpaRepository<Ship, Long>{
         @Param("id") id: Long?,
         @Param("name") name: String?
     ): List<Ship>
+
+    @Modifying
+    @Transactional
+    @Query("update Ship s set s.countryOfOrigin = ?1 where s.id = ?2")
+    fun setCountryOfOrigin(
+        countryOfOrigin: String,
+        id: Long?
+    )
 }
