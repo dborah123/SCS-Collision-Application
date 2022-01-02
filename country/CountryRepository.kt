@@ -23,4 +23,24 @@ interface CountryRepository: JpaRepository<Country, Long> {
         @Param("name") name: String
     ): Country?
 
+    @Query("SELECT c FROM Country c WHERE "
+    + "c.numIncidents > :numIncidents"
+    )
+    fun gtNumIncidents(
+        @Param("numIncidents") numIncidents: Int,
+    ): List<Country>
+
+    @Query("SELECT c FROM Country c WHERE "
+    + "c.numIncidents < :numIncidents"
+    )
+    fun ltNumIncidents(
+        @Param("numIncidents") numIncidents: Int,
+    ): List<Country>
+
+    @Query("SELECT c FROM Country c WHERE "
+            + "c.numIncidents = :numIncidents"
+    )
+    fun eqNumIncidents(
+        @Param("numIncidents") numIncidents: Int,
+    ): List<Country>
 }
