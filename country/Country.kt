@@ -23,7 +23,7 @@ class Country(
     var numShips: Int = 0,
     var numIncidents:Int = 0,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
                 @JoinTable(
                     name = "incidents_countriesInvolved",
                     joinColumns = [JoinColumn(name = "country_id")],
@@ -43,6 +43,16 @@ class Country(
     fun removeShip(ship: Ship) {
         ships.remove(ship)
         numShips--
+    }
+
+    fun addIncident(incident: Incident) {
+        incidents.add(incident)
+        numIncidents++
+    }
+
+    fun removeIncident(incident: Incident) {
+        incidents.remove(incident)
+        numIncidents--
     }
 
     // toString, Getters, Setters

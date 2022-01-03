@@ -24,7 +24,9 @@ class Incident(
                 @OneToOne
                 val shipB: Ship,
                 val time: LocalDateTime,
-                @ManyToMany(mappedBy = "incidents")
+                val location_x: Double,
+                val location_y: Double,
+                @ManyToMany(mappedBy = "incidents", fetch = FetchType.LAZY)
                 val countriesInvolved: Set<Country>
                 ) {
 
