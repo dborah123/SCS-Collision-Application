@@ -1,5 +1,6 @@
 package com.example.scscollision.country
 
+import com.example.scscollision.ship.Ship
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -22,6 +23,15 @@ interface CountryRepository: JpaRepository<Country, Long> {
     fun getCountryByName(
         @Param("name") name: String
     ): Country?
+
+    @Query("SELECT c FROM Country c WHERE "
+    + "(c.id = :id AND :name is null) "
+    + "OR (c.name = :name AND :id is null)"
+    )
+    fun getCountryByIdOrName(
+        @Param("id") id: Long?,
+        @Param("name") name: String?
+    ): List<Country>
 
     /**
      * Operator queries for number of incidents

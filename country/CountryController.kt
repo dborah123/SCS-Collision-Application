@@ -1,10 +1,7 @@
 package com.example.scscollision.country
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path = ["countries"])
@@ -49,5 +46,28 @@ class CountryController(@Autowired val COUNTRY_SERVICE: CountryService) {
         @RequestParam() operator: String
     ): List<Country> {
         return COUNTRY_SERVICE.getCountryByNumShips(numShips, operator)
+    }
+
+    /****************
+     * POST MAPPING *
+     ****************/
+
+    @PostMapping("/add/")
+    fun addCountry(
+        @RequestParam() name: String
+    ) {
+        return COUNTRY_SERVICE.addCountry(name)
+    }
+
+    /******************
+     * DELETE MAPPING *
+     ******************/
+
+    @DeleteMapping("/delete/")
+    fun deleteCountry(
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) name: String?
+    ) {
+        return COUNTRY_SERVICE.deleteCountry(id, name)
     }
 }

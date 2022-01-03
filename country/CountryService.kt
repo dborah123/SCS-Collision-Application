@@ -61,4 +61,38 @@ class CountryService(@Autowired val COUNTRY_REPO: CountryRepository, val SHIP_RE
             }
         }
     }
+
+    /*****************
+     * POST FUNCTION *
+     *****************/
+
+    fun addCountry(name: String) {
+
+        // Check if country name is already take in database
+        if (COUNTRY_REPO.getCountryByName(name) != null) {
+            throw Exception("Country with $name already taken")
+        } else {
+            COUNTRY_REPO.save(Country(name = name))
+        }
+    }
+
+    /*******************
+     * DELETE FUNCTION *
+     *******************/
+
+    fun deleteCountry(id: Long?, name: String?) {
+        if (id == null && name == null) {
+            throw Exception("Id and name not specified")
+        }
+
+        val country = COUNTRY_REPO.getCountryByIdOrName(id, name)
+
+        if (country.isEmpty()) {
+            throw Exception("Country with name $name and id #$id not found")
+        } else if (country.size != 1) {
+            throw Exception("FATAL ERROR: More than one country found")
+        }
+
+        COUNTRY_REPO.delete(country[0])
+    }
 }
