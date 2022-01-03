@@ -7,7 +7,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "country")
 class Country(
-                @Id
+    @Id
                 @SequenceGenerator(
                     name = "country_sequence",
                     sequenceName = "country_sequence",
@@ -19,11 +19,11 @@ class Country(
                 )
                 val id: Long? = null,
 
-                val name: String,
-                var numShips: Int = 0,
-                var numIncidents:Int = 0,
+    var name: String,
+    var numShips: Int = 0,
+    var numIncidents:Int = 0,
 
-                @ManyToMany
+    @ManyToMany
                 @JoinTable(
                     name = "incidents_countriesInvolved",
                     joinColumns = [JoinColumn(name = "country_id")],
@@ -31,7 +31,7 @@ class Country(
                 )
                 var incidents: MutableSet<Incident> = mutableSetOf(),
 
-                @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
                 var ships: MutableSet<Ship> = mutableSetOf()) {
 
 

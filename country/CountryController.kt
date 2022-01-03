@@ -59,6 +59,20 @@ class CountryController(@Autowired val COUNTRY_SERVICE: CountryService) {
         return COUNTRY_SERVICE.addCountry(name)
     }
 
+    /****************
+     * PUT MAPPINGS *
+     ****************/
+
+    @PutMapping("/update/")
+    fun updateCountryName(
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) newName: String,
+
+    ) {
+        COUNTRY_SERVICE.updateCountryName(id, name, newName)
+    }
+
     /******************
      * DELETE MAPPING *
      ******************/

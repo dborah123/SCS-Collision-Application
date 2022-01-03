@@ -77,6 +77,44 @@ class CountryService(@Autowired val COUNTRY_REPO: CountryRepository, val SHIP_RE
     }
 
     /*******************
+     * UPDATE FUNCTION *
+     *******************/
+
+    fun updateCountryName(id: Long?, name: String?, newName: String) {
+
+        // Getting country
+        if (id == null && name == null) {
+            throw Exception("Id and name not specified")
+        }
+
+        val countryList = COUNTRY_REPO.getCountryByIdOrName(id, name)
+
+        // Checking if country query is correct
+        if (countryList.isEmpty()) {
+            throw Exception("Country with name $name and id #$id not found")
+        } else if (countryList.size != 1) {
+            throw Exception("FATAL ERROR: More than one country found")
+        }
+
+        // Making sure there isn't a country with newName already
+        if (COUNTRY_REPO.getCountryByName(newName) != null) {
+            throw Exception(
+                "Another country already has name $newName"
+            )
+        }
+
+        val country = countryList[0]
+        country.name = newName
+        COUNTRY_REPO.save(country)
+
+        // Updating the ships' country of origin
+        for (ship in country.ships) {
+            ship.countryOfOrigin = newName
+            SHIP_REPO.save(ship)
+        }
+    }
+
+    /*******************
      * DELETE FUNCTION *
      *******************/
 
