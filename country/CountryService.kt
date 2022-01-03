@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class CountryService(@Autowired val COUNTRY_REPO: CountryRepository) {
+class CountryService(@Autowired val COUNTRY_REPO: CountryRepository, val SHIP_REPO: ShipRepository) {
 
     private val logger = KotlinLogging.logger {}
 
@@ -20,7 +20,7 @@ class CountryService(@Autowired val COUNTRY_REPO: CountryRepository) {
     }
 
     fun getSpecificCountries(id: Long?, name: String?): List<Country> {
-        return COUNTRY_REPO.getSpecificBooks(id, name)
+        return COUNTRY_REPO.getSpecificCountries(id, name)
     }
 
     fun getCountriesByNumIncidents(numIncidents: Int, operator: String): List<Country> {
@@ -35,7 +35,30 @@ class CountryService(@Autowired val COUNTRY_REPO: CountryRepository) {
         }
     }
 
-    fun getCountriesByShips(id: Long?, name: String?, numShips: Int?, operator: String?): List<Country> {
-        return listOf()
+    fun getCountryByShip(id: Long?, name: String?): Country {
+
+        val shipList = SHIP_REPO.getShipsByIdOrName(id, name)
+        val country: Country?
+
+        if (shipList.isEmpty()) {
+            throw Exception("Ship with id $id and name $name does not exist")
+        } else {
+            country = COUNTRY_REPO.getCountryByName(shipList[0].countryOfOrigin)
+                ?: throw Exception(
+                    "FATAL ERROR: Country with name ${shipList[0].countryOfOrigin} not found"
+                )
+        }
+        return country
+    }
+
+    fun getCountryByNumShips(numShips: Int, operator: String): List<Country> {
+        return when (operator) {
+            "gt" -> COUNTRY_REPO.gtNumShips(numShips)
+            "lt" -> COUNTRY_REPO.ltNumShips(numShips)
+            "eq" -> COUNTRY_REPO.eqNumShips(numShips)
+            else -> {
+                throw Exception("Please enter a valid operation: 'gt', 'lt', or 'eq'")
+            }
+        }
     }
 }

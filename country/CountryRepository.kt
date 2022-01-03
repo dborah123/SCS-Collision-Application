@@ -13,7 +13,7 @@ interface CountryRepository: JpaRepository<Country, Long> {
     + "(:id is null OR c.id = :id) "
     + "AND (:name is null OR c.name = :id)"
     )
-    fun getSpecificBooks(
+    fun getSpecificCountries(
         @Param("id") id: Long?,
         @Param("name") name: String?
     ): List<Country>
@@ -23,6 +23,9 @@ interface CountryRepository: JpaRepository<Country, Long> {
         @Param("name") name: String
     ): Country?
 
+    /**
+     * Operator queries for number of incidents
+     */
     @Query("SELECT c FROM Country c WHERE "
     + "c.numIncidents > :numIncidents"
     )
@@ -43,4 +46,33 @@ interface CountryRepository: JpaRepository<Country, Long> {
     fun eqNumIncidents(
         @Param("numIncidents") numIncidents: Int,
     ): List<Country>
+
+    /**
+     * Operator functions for number of ships
+     */
+    @Query(
+        value = "SELECT * FROM COUNTRY c WHERE c.num_ships > :numShips",
+        nativeQuery = true
+    )
+    fun gtNumShips(
+        @Param("numShips") numShips: Int
+    ): List<Country>
+
+    @Query(
+        value = "SELECT * FROM COUNTRY c WHERE c.num_ships < :numShips",
+        nativeQuery = true
+    )
+    fun ltNumShips(
+        @Param("numShips") numShips: Int
+    ): List<Country>
+
+    @Query(
+        value = "SELECT * FROM COUNTRY c WHERE c.num_ships = :numShips",
+        nativeQuery = true
+    )
+    fun eqNumShips(
+        @Param("numShips") numShips: Int
+    ): List<Country>
+
+
 }

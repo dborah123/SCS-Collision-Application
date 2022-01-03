@@ -36,12 +36,18 @@ class CountryController(@Autowired val COUNTRY_SERVICE: CountryService) {
     }
 
     @GetMapping("/search/ships/")
-    fun getCountriesByShips(
+    fun getCountriesByShip(
         @RequestParam(required = false) id: Long?,
         @RequestParam(required = false) shipName: String?,
-        @RequestParam(required = false) numIncidents: Int?,
-        @RequestParam(required = false) operator: String?
+    ): Country {
+        return COUNTRY_SERVICE.getCountryByShip(id, shipName)
+    }
+
+    @GetMapping("/search/numberofships/")
+    fun getCountriesByNumShips(
+        @RequestParam() numShips: Int,
+        @RequestParam() operator: String
     ): List<Country> {
-        return COUNTRY_SERVICE.getCountriesByShips(shipName, numIncidents, operator)
+        return COUNTRY_SERVICE.getCountryByNumShips(numShips, operator)
     }
 }
