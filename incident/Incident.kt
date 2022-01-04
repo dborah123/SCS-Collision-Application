@@ -2,6 +2,7 @@ package com.example.scscollision.incident
 
 import com.example.scscollision.country.Country
 import com.example.scscollision.ship.Ship
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -26,6 +27,7 @@ class Incident(
                 val time: LocalDateTime,
                 val location_x: Double,
                 val location_y: Double,
+                @JsonIgnore
                 @ManyToMany(mappedBy = "incidents", fetch = FetchType.LAZY)
                 val countriesInvolved: Set<Country>
                 ) {

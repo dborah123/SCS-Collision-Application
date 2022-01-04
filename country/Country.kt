@@ -8,31 +8,31 @@ import javax.persistence.*
 @Table(name = "country")
 class Country(
     @Id
-                @SequenceGenerator(
-                    name = "country_sequence",
-                    sequenceName = "country_sequence",
-                    allocationSize = 1
-                )
-                @GeneratedValue(
-                    strategy = GenerationType.SEQUENCE,
-                    generator = "country_sequence",
-                )
-                val id: Long? = null,
+    @SequenceGenerator(
+        name = "country_sequence",
+        sequenceName = "country_sequence",
+        allocationSize = 1
+    )
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "country_sequence",
+    )
+    val id: Long? = null,
 
     var name: String,
     var numShips: Int = 0,
     var numIncidents:Int = 0,
 
     @ManyToMany(fetch = FetchType.LAZY)
-                @JoinTable(
-                    name = "incidents_countriesInvolved",
-                    joinColumns = [JoinColumn(name = "country_id")],
-                    inverseJoinColumns = [JoinColumn(name = "incident_id")]
-                )
-                var incidents: MutableSet<Incident> = mutableSetOf(),
+    @JoinTable(
+        name = "incidents_countriesInvolved",
+        joinColumns = [JoinColumn(name = "country_id")],
+        inverseJoinColumns = [JoinColumn(name = "incident_id")]
+    )
+    var incidents: MutableSet<Incident> = mutableSetOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-                var ships: MutableSet<Ship> = mutableSetOf()) {
+    var ships: MutableSet<Ship> = mutableSetOf()) {
 
 
     fun addShip(ship: Ship) {

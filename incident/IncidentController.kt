@@ -26,4 +26,18 @@ class IncidentController(@Autowired val INCIDENT_SERVICE: IncidentService) {
     ): List<Incident> {
         return INCIDENT_SERVICE.getIncidents(id, shipAName, shipAId, shipBName, shipBId)
     }
+
+    @GetMapping("/search/bycountry/")
+    fun getIncidentByCountry(
+        @RequestParam(required = false) countryAId: Long?,
+        @RequestParam(required = false) countryAName: String?,
+        @RequestParam(required = false) countryBId: Long?,
+        @RequestParam(required = false) countryBName: String?,
+    ): List<Incident> {
+        return INCIDENT_SERVICE.getIncidentsByCountry(countryAId,
+            countryAName,
+            countryBId,
+            countryBName
+        )
+    }
 }
