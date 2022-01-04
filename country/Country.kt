@@ -29,7 +29,7 @@ class Country(
         joinColumns = [JoinColumn(name = "country_id")],
         inverseJoinColumns = [JoinColumn(name = "incident_id")]
     )
-    var incidents: MutableSet<Incident> = mutableSetOf(),
+    var incidents: MutableList<Incident> = mutableListOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var ships: MutableSet<Ship> = mutableSetOf()) {
