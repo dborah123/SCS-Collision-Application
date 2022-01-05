@@ -7,6 +7,9 @@ import com.example.scscollision.ship.ShipRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.transaction.Transactional
 
 @Service
@@ -123,5 +126,112 @@ class IncidentService(@Autowired
         }
 
         return INCIDENT_REPO.getIncidentsByCountries(aId, bId)
+    }
+
+    fun getIncidentsByRadius(
+        xCoord: Double,
+        yCoord: Double,
+        radius: Double
+    ): MutableList<Incident> {
+        /**
+         * Returns list of incidents that occurred in a radius
+         */
+        val incidentsList = INCIDENT_REPO.findAll()
+        val iterator = incidentsList.iterator()
+        var distFromCoords: Double
+        var incident: Incident
+
+        // Remove elements outisde of radius
+        while (iterator.hasNext()) {
+            incident = iterator.next()
+            distFromCoords = incident.getDistFromCoords(xCoord, yCoord)
+
+            if (distFromCoords > radius) {
+                iterator.remove()
+            }
+        }
+
+        return incidentsList
+    }
+
+    /******************
+     * POST FUNCTIONS *
+     ******************/
+
+    fun addIncident(
+        shipAId: Long?,
+        shipAName: String?,
+        shipBId: Long?,
+        shipBName: String?,
+        datetimeString: String?,
+        now: Boolean?
+    ) {
+        /**
+         * Adds a new incident
+         */
+        val datetime: LocalDateTime
+
+        // Checking if datetime or now is provided
+        if (datetimeString == null && (now == null || !now)) {
+            throw Exception("Datetime or now (boolean) not specified")
+        } else if (datetimeString != null && now == true) {
+            throw Exception("Cannot specify both datetime $datetimeString and now (boolean) true")
+        }
+
+        // Getting shipA
+        val shipAList = SHIP_REPO.getShipsByIdOrName(shipAId, shipAName)
+
+        if (shipAList.isEmpty()) {
+            throw Exception("shipA with name $shipAName and/or id $shipAId not found")
+        } else if (shipAList.size > 1) {
+            throw Exception("Multiple ships found with name $shipAName and id $shipAId")
+        }
+        val shipA = shipAList[0]
+
+        // Getting second country involved
+        val countryA = COUNTRY_REPO.getCountryByName(shipA.countryOfOrigin)
+            ?: throw Exception("Country with name ${shipA.countryOfOrigin}")
+
+        // Getting shipB
+        val shipBList = SHIP_REPO.getShipsByIdOrName(shipBId, shipBName)
+
+        if (shipBList.isEmpty()) {
+            throw Exception("shipB with name $shipBName and/or id $shipBId not found")
+        } else if (shipBList.size > 1) {
+            throw Exception("Multiple ships found with name $shipBName and id $shipBId")
+        }
+        val shipB = shipBList[0]
+
+        // Getting second country involved
+        val countryB = COUNTRY_REPO.getCountryByName(shipB.countryOfOrigin)
+            ?: throw Exception("Country with name ${shipB.countryOfOrigin} not found")
+
+        // Getting datetime
+        if (now != null && now) {
+            datetime = LocalDateTime.now()
+        } else {
+            // Parse datetime from string
+            val datetimeFormatter = DateTimeFormatter.ofPattern(
+                "uuuu-mm-dd hh:mm a",
+                Locale.ENGLISH
+            )
+
+            datetime = LocalDateTime.parse(datetimeString, datetimeFormatter)
+        }
+
+        // Create and save incident
+        val incident = Incident(
+            shipA = shipA,
+            shipB = shipB,
+            time = datetime,
+            countriesInvolved = setOf(countryA, countryB)
+        )
+
+        INCIDENT_REPO.save(incident)
+
+        // Add incident to countries and save
+        countryA.addIncident(incident)
+        countryB.addIncident(incident)
+        COUNTRY_REPO.saveAll(listOf(countryA, countryB))
     }
 }
