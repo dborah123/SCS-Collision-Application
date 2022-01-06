@@ -224,7 +224,7 @@ class IncidentService(@Autowired
             shipA = shipA,
             shipB = shipB,
             time = datetime,
-            countriesInvolved = setOf(countryA, countryB)
+            countriesInvolved = mutableSetOf(countryA, countryB)
         )
 
         INCIDENT_REPO.save(incident)
@@ -234,4 +234,134 @@ class IncidentService(@Autowired
         countryB.addIncident(incident)
         COUNTRY_REPO.saveAll(listOf(countryA, countryB))
     }
+
+    /*****************
+     * PUT FUNCTIONS *
+     *****************/
+
+    fun updateIncident(
+        id: Long,
+        shipAId: Long?,
+        shipAName: String?,
+        shipBId: Long?,
+        shipBName: String?,
+        datetimeString: String?,
+        xCoord: Double?,
+        yCoord: Double?
+    ) {
+
+        // Getting incident
+        val incidentOptional = INCIDENT_REPO.findById(id)
+        val incident: Incident
+
+        if (incidentOptional.isEmpty) {
+            throw Exception("Error: incident with id $id not found")
+        }
+
+        incident = incidentOptional.get()
+
+        // Setting new shipA
+        if (shipAId != null || shipAName != null) {
+            // Getting new ship
+            val shipA = SHIP_REPO.getShipsByIdOrName(shipAId, shipAName)
+
+            if (shipA.isEmpty()) {
+                throw Exception("Ship with id $shipAId and/or name $shipAName was not found")
+            }
+
+            // Removing old country from countries involved
+            val iterator = incident.countriesInvolved.iterator()
+            var countryIter: Country
+
+            while (iterator.hasNext()) {
+                countryIter = iterator.next()
+
+                if (countryIter.name == incident.shipA.countryOfOrigin) {
+                    // Remove country from incident
+                    incident.countriesInvolved.remove(countryIter)
+                    INCIDENT_REPO.save(incident)
+
+                    // Remove incident from country
+                    countryIter.removeIncident(incident)
+                    COUNTRY_REPO.save(countryIter)
+                }
+            }
+
+            // Adding new Ship to incident
+            incident.shipA = shipA[0]
+            val countryString = shipA[0].countryOfOrigin
+            countryIter = COUNTRY_REPO.getCountryByName(countryString)!!
+
+            // Saving country
+            countryIter.addIncident(incident)
+            COUNTRY_REPO.save(countryIter)
+
+            // Saving incident
+            incident.countriesInvolved.add(countryIter)
+            INCIDENT_REPO.save(incident)
+        }
+
+        // Setting new shipB
+        if (shipBId != null || shipBName != null) {
+            // Getting new ship
+            val shipB = SHIP_REPO.getShipsByIdOrName(shipBId, shipBName)
+
+            if (shipB.isEmpty()) {
+                throw Exception("Ship with id $shipBId and/or name $shipBName was not found")
+            }
+
+            // Removing old country from countries involved
+            val iterator = incident.countriesInvolved.iterator()
+            var countryIter: Country
+            while (iterator.hasNext()) {
+                countryIter = iterator.next()
+
+                if (countryIter.name == incident.shipB.countryOfOrigin) {
+                    // Remove country from incident
+                    incident.countriesInvolved.remove(countryIter)
+                    INCIDENT_REPO.save(incident)
+
+                    // Remove incident from country
+                    countryIter.removeIncident(incident)
+                    COUNTRY_REPO.save(countryIter)
+                }
+            }
+
+            // Adding new Ship to incident
+            incident.shipB = shipB[0]
+            val countryString = shipB[0].countryOfOrigin
+            countryIter = COUNTRY_REPO.getCountryByName(countryString)!!
+
+            // Saving country
+            countryIter.addIncident(incident)
+            COUNTRY_REPO.save(countryIter)
+
+            // Saving incident
+            incident.countriesInvolved.add(countryIter)
+            INCIDENT_REPO.save(incident)
+        }
+
+        // Changing datetime
+        if (datetimeString != null) {
+            // Parse datetime from string
+            val datetimeFormatter = DateTimeFormatter.ofPattern(
+                "uuuu-mm-dd hh:mm a",
+                Locale.ENGLISH
+            )
+
+            incident.time = LocalDateTime.parse(datetimeString, datetimeFormatter)
+        }
+
+        if (xCoord != null) {
+            incident.location_x = xCoord
+        }
+
+        if (yCoord != null) {
+            incident.location_y = yCoord
+        }
+
+        INCIDENT_REPO.save(incident)
+    }
+
+
 }

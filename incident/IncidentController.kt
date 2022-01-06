@@ -3,6 +3,7 @@ package com.example.scscollision.incident
 import com.example.scscollision.country.Country
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import javax.persistence.Id
 
 @RestController
@@ -63,6 +64,26 @@ class IncidentController(@Autowired val INCIDENT_SERVICE: IncidentService) {
         // TODO: Add better time functionalities
         return INCIDENT_SERVICE.addIncident(
             shipAId, shipAName, shipBId, shipBName, datetime, now
+        )
+    }
+
+    /****************
+     * PUT MAPPINGS *
+     ****************/
+
+    @PutMapping("/update/")
+    fun updateIncident(
+        @RequestParam id: Long,
+        @RequestParam(required = false) shipAId: Long?,
+        @RequestParam(required = false) shipAName: String?,
+        @RequestParam(required = false)shipBId: Long?,
+        @RequestParam(required = false) shipBName: String?,
+        @RequestParam(required = false) datetime: String?,
+        @RequestParam(required = false) xCoord: Double?,
+        @RequestParam(required = false) yCoord: Double?
+    ) {
+        return INCIDENT_SERVICE.updateIncident(
+            id, shipAId, shipAName, shipBId, shipBName, datetime, xCoord, yCoord
         )
     }
 }

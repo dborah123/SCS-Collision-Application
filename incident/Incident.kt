@@ -23,15 +23,15 @@ class Incident(
                 )
                 val id: Long? = null,
                 @OneToOne
-                val shipA: Ship,
+                var shipA: Ship,
                 @OneToOne
-                val shipB: Ship,
-                val time: LocalDateTime,
-                val location_x: Double = shipA.xCoord,
-                val location_y: Double = shipA.yCoord,
+                var shipB: Ship,
+                var time: LocalDateTime,
+                var location_x: Double = shipA.xCoord,
+                var location_y: Double = shipA.yCoord,
                 @JsonIgnore
                 @ManyToMany(mappedBy = "incidents", fetch = FetchType.LAZY)
-                val countriesInvolved: Set<Country>
+                val countriesInvolved: MutableSet<Country>
                 ) {
 
     override fun toString(): String {
