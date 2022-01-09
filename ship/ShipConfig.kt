@@ -39,7 +39,7 @@ class ShipConfig {
                 time = LocalDateTime.now(),
                 location_x = shipA.xCoord,
                 location_y = shipA.yCoord,
-                countriesInvolved = setOf(usa, china)
+                countriesInvolved = mutableSetOf(usa, china)
             )
             countryrepo.saveAll(listOf(usa, china))
             shiprepo.saveAll(listOf(shipA, shipB))

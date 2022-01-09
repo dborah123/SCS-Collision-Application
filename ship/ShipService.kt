@@ -263,4 +263,30 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
 
         SHIP_REPO.delete(ship)
     }
+
+    /******************
+     * CLOSEST POINTS *
+     ******************/
+
+    fun closestPoints(): List<Ship> {
+        /**
+         * Monitors for the closest two ships and determines if there is an
+         * incident between them. If so, creates incident report and returns
+         * the two ships
+         */
+
+        val shipList = SHIP_REPO.findAll()
+        val result: List<Ship>
+
+        if (shipList.size < 4) {
+            result = bruteForce(shipList)
+        }
+    }
+
+    fun bruteForce(shipList: List<Ship>): List<Ship> {
+        /**
+         * Brute force closest points algorithm. Returns the pair of closest
+         * ships.
+         */
+    }
 }

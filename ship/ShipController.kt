@@ -106,4 +106,13 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
     ) {
         return SHIP_SERVICE.deleteShip(id, name)
     }
+
+    /******************
+     * CLOSEST POINTS *
+     ******************/
+
+    @GetMapping("/monitor/")
+    fun closestPoints(): List<Ship> {
+        return SHIP_SERVICE.closestPoints()
+    }
 }

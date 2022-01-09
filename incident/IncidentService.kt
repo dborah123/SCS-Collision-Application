@@ -363,5 +363,11 @@ class IncidentService(@Autowired
         INCIDENT_REPO.save(incident)
     }
 
+    /********************
+     * DELETE FUNCTIONS *
+     ********************/
 
+    fun deleteIncident(id: Long) {
+        INCIDENT_REPO.deleteById(id)
+    }
 }

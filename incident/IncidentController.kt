@@ -76,7 +76,7 @@ class IncidentController(@Autowired val INCIDENT_SERVICE: IncidentService) {
         @RequestParam id: Long,
         @RequestParam(required = false) shipAId: Long?,
         @RequestParam(required = false) shipAName: String?,
-        @RequestParam(required = false)shipBId: Long?,
+        @RequestParam(required = false) shipBId: Long?,
         @RequestParam(required = false) shipBName: String?,
         @RequestParam(required = false) datetime: String?,
         @RequestParam(required = false) xCoord: Double?,
@@ -85,5 +85,16 @@ class IncidentController(@Autowired val INCIDENT_SERVICE: IncidentService) {
         return INCIDENT_SERVICE.updateIncident(
             id, shipAId, shipAName, shipBId, shipBName, datetime, xCoord, yCoord
         )
+    }
+
+    /*****************
+     * DELETE MAPPING *
+     *****************/
+
+    @DeleteMapping("/delete/")
+    fun deleteIncident(
+        @RequestParam id: Long
+    ) {
+        return INCIDENT_SERVICE.deleteIncident(id)
     }
 }
