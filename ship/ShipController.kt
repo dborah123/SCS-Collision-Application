@@ -112,7 +112,7 @@ class ShipController(@Autowired val SHIP_SERVICE: ShipService, ) {
      ******************/
 
     @GetMapping("/monitor/")
-    fun closestPoints(): List<Ship> {
+    fun closestPoints(): Pair<Ship, Ship> {
         return SHIP_SERVICE.closestPoints()
     }
 }

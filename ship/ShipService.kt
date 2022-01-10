@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service
 import mu.KotlinLogging
 import java.util.*
 import javax.transaction.Transactional
+import kotlin.math.abs
+import kotlin.math.min
 
 @Service
 class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: CountryRepository) {
@@ -268,7 +270,7 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
      * CLOSEST POINTS *
      ******************/
 
-    fun closestPoints(): List<Ship> {
+    fun closestPoints(): Triple<Ship, Ship, Double>? {
         /**
          * Monitors for the closest two ships and determines if there is an
          * incident between them. If so, creates incident report and returns
@@ -276,17 +278,86 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
          */
 
         val shipList = SHIP_REPO.findAll()
-        val result: List<Ship>
 
-        if (shipList.size < 4) {
-            result = bruteForce(shipList)
-        }
+        // Sort lists by x and y coordinates respectively
+        val shipListX = shipList.sortedBy { it.xCoord }
+        shipList.sortBy { it.yCoord }
+
+        return closestPointsHelper(shipListX, shipList, shipList.size)
     }
 
-    fun bruteForce(shipList: List<Ship>): List<Ship> {
+    fun closestPointsHelper(shipsX: List<Ship>, shipsY: List<Ship>, size: Int): Triple<Ship, Ship, Double>? {
+        /**
+         * Helper function for closest points
+         */
+
+        val result: Triple<Ship, Ship, Double>?
+
+        // Brute force if list is small enough
+        if (size < 4) {
+            result = bruteForce(shipsX)
+            addShip(result!!.first)
+            addShip(result.second)
+            return result
+        }
+
+        // Find middle point
+        val mid = size / 2
+        val midpoint = shipsX[mid]
+
+        // Split lists
+        val shipsXHalf1 = shipsX.subList(0, mid)
+        val shipsXHalf2 = shipsX.subList(mid, size)
+
+        val dr = closestPointsHelper(shipsXHalf1, shipsY, mid)
+        val dl = closestPointsHelper(shipsXHalf2, shipsY, size - mid)
+        val d: Double
+
+        // Finding the smaller of the two distances
+        if (dr!!.third > dl!!.third) {
+            d = dl.third
+        } else {
+            d = dr.third
+        }
+
+        var stripP = mutableListOf<Ship>()
+        var stripQ = mutableListOf<Ship>()
+
+        // Iterate thru list, finding pairs that are closer than d
+        for (i in 0..size) {
+            if (abs(shipsX[i].xCoord - midpoint.xCoord) < d) {
+                stripP.add(shipsX[i])
+            }
+            if ( abs(shipsY[i].xCoord - midpoint.xCoord) < d) {
+                stripQ.add(shipsY[i])
+            }
+        }
+
+    }
+
+    fun bruteForce(shipList: List<Ship>): Triple<Ship, Ship, Double>? {
         /**
          * Brute force closest points algorithm. Returns the pair of closest
          * ships.
          */
+
+        var minVal = 10000000.0
+        var closestPair: Triple<Ship, Ship, Double>? = null
+
+        for (i in 0 until (shipList.size - 1)) {
+            for (j in 1 until (shipList.size)) {
+                if (shipList[i].getDistBetweenShips(shipList[j]) < minVal &&
+                        shipList[i].countryOfOrigin == shipList[j].countryOfOrigin) {
+                    minVal = shipList[i].getDistBetweenShips(shipList[j])
+                    closestPair = Triple(shipList[i], shipList[j], minVal)
+                }
+            }
+        }
+
+        return closestPair
+    }
+
+    fun stripClosest() {
+
     }
 }
