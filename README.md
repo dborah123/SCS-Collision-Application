@@ -1,4 +1,4 @@
-# :ship: South China Sea Collision-Application :ship:
+# :ship: South China Sea Collision Application :ship:
 ## :ocean: Application Description:
 REST API written in Kotlin using Spring Framework. Using Spring JPA to store and access data in PostgreSQL database.
 
