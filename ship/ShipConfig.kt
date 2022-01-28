@@ -30,6 +30,21 @@ class ShipConfig {
                 yCoord = 1143003.6,
                 countryOfOrigin = "China"
             )
+
+            val shipList:MutableList<Ship> = mutableListOf()
+            var currShip: Ship
+
+            for (i in 0..20) {
+                currShip = Ship(
+                    name = "A",
+                    xCoord = (100000..200000).random().toDouble(),
+                    yCoord = (1000000..1500000).random().toDouble(),
+                    countryOfOrigin = "China"
+                )
+                shipList.add(currShip)
+                china.addShip(currShip)
+            }
+
             usa.addShip(shipA)
             china.addShip(shipB)
 
@@ -43,6 +58,7 @@ class ShipConfig {
             )
             countryrepo.saveAll(listOf(usa, china))
             shiprepo.saveAll(listOf(shipA, shipB))
+            shiprepo.saveAll(shipList)
 
             incidentrepo.save(incident)
 
@@ -50,9 +66,6 @@ class ShipConfig {
             china.addIncident(incident)
 
             countryrepo.saveAll(listOf(usa, china))
-
-
-
         }
     }
 }

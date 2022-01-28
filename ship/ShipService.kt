@@ -2,6 +2,7 @@ package com.example.scscollision.ship
 
 import com.example.scscollision.country.Country
 import com.example.scscollision.country.CountryRepository
+import com.example.scscollision.incident.IncidentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import mu.KotlinLogging
@@ -12,7 +13,11 @@ import kotlin.math.log
 import kotlin.math.min
 
 @Service
-class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: CountryRepository) {
+class ShipService(
+    @Autowired val SHIP_REPO: ShipRepository,
+    val COUNTRY_REPO: CountryRepository,
+    val INCIDENT_SERVICE: IncidentService
+    ) {
 
     private val logger = KotlinLogging.logger {}
 
@@ -285,7 +290,27 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         val shipListX = shipList.sortedBy { it.xCoord }
         shipList.sortBy { it.yCoord }
 
-        return closestPointsHelper(shipListX, shipList, shipList.size)
+        val closestShips = closestPointsHelper(shipListX, shipList, shipList.size)
+
+
+
+        if (closestShips == null) {
+            logger.error { "Closest Points algorithm failed" }
+        } else {
+            logger.info { "closestPoints: name: ${closestShips.first.name} name: ${closestShips.second.name}" }
+            // Create incident report
+            INCIDENT_SERVICE.addIncident(
+                closestShips.first.id,
+                null,
+                closestShips.second.id,
+                null,
+                null,
+                true
+            )
+
+        }
+
+        return closestShips
     }
 
     fun closestPointsHelper(shipsX: List<Ship>, shipsY: List<Ship>, size: Int): Triple<Ship, Ship, Double>? {
@@ -298,8 +323,6 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         // Brute force if list is small enough
         if (size < 4) {
             result = bruteForce(shipsX)
-//            addShip(result!!.first)
-//            addShip(result.second)
             if (result == null) {
                 logger.info { "NULL" }
             } else {
@@ -330,11 +353,11 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
             curr_pair = dr
         }
 
-        var stripP = mutableListOf<Ship>()
-        var stripQ = mutableListOf<Ship>()
+        val stripP = mutableListOf<Ship>()
+        val stripQ = mutableListOf<Ship>()
 
         // Iterate thru list, finding pairs that are closer than d
-        for (i in 0..size) {
+        for (i in 0..stripP.size) {
             if (abs(shipsX[i].xCoord - midpoint.xCoord) < d) {
                 stripP.add(shipsX[i])
             }
