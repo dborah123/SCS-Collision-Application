@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import java.util.*
 import javax.transaction.Transactional
 import kotlin.math.abs
+import kotlin.math.log
 import kotlin.math.min
 
 @Service
@@ -151,6 +152,7 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
                     "Country ${ship.countryOfOrigin} does not exist in database"
                 )
             } else {
+                logger.info { "xcoord: ${ship.xCoord} yCoord: ${ship.yCoord}" }
                 SHIP_REPO.save(ship)
                 country.addShip(ship)
             }
@@ -296,8 +298,13 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         // Brute force if list is small enough
         if (size < 4) {
             result = bruteForce(shipsX)
-            addShip(result!!.first)
-            addShip(result.second)
+//            addShip(result!!.first)
+//            addShip(result.second)
+            if (result == null) {
+                logger.info { "NULL" }
+            } else {
+                logger.info { "ShipA: ${result.first.name} ShipB: ${result.second.name}" }
+            }
             return result
         }
 
@@ -312,12 +319,15 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         val dr = closestPointsHelper(shipsXHalf1, shipsY, mid)
         val dl = closestPointsHelper(shipsXHalf2, shipsY, size - mid)
         val d: Double
+        val curr_pair: Triple<Ship, Ship, Double>
 
         // Finding the smaller of the two distances
         if (dr!!.third > dl!!.third) {
             d = dl.third
+            curr_pair = dl
         } else {
             d = dr.third
+            curr_pair = dr
         }
 
         var stripP = mutableListOf<Ship>()
@@ -333,6 +343,17 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
             }
         }
 
+        // Sort stripP by y-coordinate
+        stripP.sortBy { ship -> ship.yCoord }
+
+        val minA = stripClosest(stripP, d) ?: curr_pair
+        val minB = stripClosest(stripQ, d) ?: curr_pair
+
+        if (minA.third < minB.third) {
+            return minA
+        } else {
+            return minB
+        }
     }
 
     fun bruteForce(shipList: List<Ship>): Triple<Ship, Ship, Double>? {
@@ -344,10 +365,11 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         var minVal = 10000000.0
         var closestPair: Triple<Ship, Ship, Double>? = null
 
+
         for (i in 0 until (shipList.size - 1)) {
             for (j in 1 until (shipList.size)) {
-                if (shipList[i].getDistBetweenShips(shipList[j]) < minVal &&
-                        shipList[i].countryOfOrigin == shipList[j].countryOfOrigin) {
+                logger.info { "INFO: ${shipList[i].getDistBetweenShips(shipList[j])}" }
+                if (shipList[i].getDistBetweenShips(shipList[j]) < minVal) {
                     minVal = shipList[i].getDistBetweenShips(shipList[j])
                     closestPair = Triple(shipList[i], shipList[j], minVal)
                 }
@@ -357,7 +379,25 @@ class ShipService(@Autowired val SHIP_REPO: ShipRepository, val COUNTRY_REPO: Co
         return closestPair
     }
 
-    fun stripClosest() {
+    fun stripClosest(shipList: MutableList<Ship>, dist: Double): Triple<Ship, Ship, Double>? {
+        /**
+         * Calculates the closest two ships and their distance
+         * Will only run at max 6 times
+         */
+        var minVal = dist
+        var j = 0
+        val size = shipList.size
+        var result: Triple<Ship, Ship, Double>? = null
 
+        for (i in 0..size) {
+            j = i + 1
+            while (j < size && (shipList[j].yCoord - shipList[i].yCoord) < minVal) {
+                minVal = shipList[i].getDistBetweenShips(shipList[j])
+                result = Triple(shipList[i], shipList[j], minVal)
+                j++
+            }
+        }
+
+        return result
     }
 }
