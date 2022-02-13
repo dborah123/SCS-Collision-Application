@@ -7,3 +7,22 @@ In recent years, there have been a bevy of geopolitical conflicts stemming from 
 
 ## :ocean: Usage
 This application keeps track of three elements: Ships, Countries, and Incidents. Each supports GET, POST, PUT, and DELETE requests. To get the two closest ships at the current time, go to the URL `ships/monitor/`
+
+## :ocean: Building
+1. Initialize a Spring project using the [Spring Initilizer](https://start.spring.io/) with the following dependecies:
+  a. Spring Data JPA
+  b. Spring Web
+  c. PostgreSQL Driver
+2. Create a PostgreSQL database and connect the project with this database using this `application.properties` file format:
+  ```
+  spring.datasource.url=jdbc:postgresql://localhost:5432/[database name]
+  spring.datasource.username=[username]
+  spring.datasource.password=[password]
+  spring.jpa.hibernate.ddl-auto=create-drop
+  spring.jpa.show-sql=true
+  spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+  spring.jpa.properties.hibernate.format_sql=true
+  ```
+  Note: `spring.jpa.hibernate.ddl-auto=create-drop` will initialize when app is run and drop tables when app is terminated
+  
+3. clone repo into code section of Spring Project folder
